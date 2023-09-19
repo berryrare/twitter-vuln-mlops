@@ -1,0 +1,55 @@
+<Html>
+<Head>
+	<script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+	</style>
+</Head>
+<Body>
+	<div id="twitterData" style="height:800px; width:100%;"></div>
+
+	<script>
+		<!-- Fix cors origin error -->
+		fetch('https://dxy4o2i456.execute-api.us-east-1.amazonaws.com/dev-stage/')
+			.then((response) => response.json())
+			.then((response_data) => {
+				data = response_data['data']
+				modified_date = response_data['date']
+
+				let xArray = data.map((elem) => elem['vendor'])
+				let yArray = data.map((elem) => elem['risk_by_sentiment_analysis'])
+
+				var layout = {
+					title: 'Top High-Security Risk Vendors Based on ML Analysis -' + modified_date,
+					xaxis: {
+						title: 'Vulnerability Risk'
+					},
+					yaxis: {
+						title: 'Vendor'
+					}
+				};
+
+				var graphData = [{
+					type: 'bar',
+					x: yArray,
+					y: xArray,
+					orientation: 'h',
+					text: yArray.map(String),
+					textposition: 'auto',
+					hoverinfo: 'none',
+					transforms: [{
+						type: 'sort',
+						target: 'x',
+						order: 'ascending'
+					}],
+					 textfont: {
+						color: 'rgb(255, 255, 255)'
+					}  
+				}];
+				// Display using Plotly
+				Plotly.newPlot("twitterData", graphData, layout);
+			}).catch(function (err) {
+				console.warn('Something went wrong.', err);
+			});
+	</script>
+</Body>
+
+</Html>
